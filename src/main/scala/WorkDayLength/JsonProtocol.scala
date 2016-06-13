@@ -1,6 +1,12 @@
 package WorkDayLength
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+
 import spray.json.DefaultJsonProtocol
+
+import scala.concurrent.duration.Duration
 
 /**
   * JSON output is of the form:
@@ -50,7 +56,14 @@ case class ApiResult(notes: String, row_headers: List[String], rows: List[List[E
   * @param productivity level of productivity
   */
 case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String, category: String, productivity: Int) {
-  override def toString: String =  s"$activity : $date ($nSeconds sec.)"
+  import java.time.Duration.ofSeconds
+
+  def startsAt = LocalDateTime.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+  def endsAt =  startsAt plus duration
+
+  override def toString: String =  s"$date ($duration): $activity"
+
+  private def duration = ofSeconds(nSeconds)
 }
 case class QueryResult(notes: String, rowHeaders: List[String], entries: List[TimeEntry])
 case class DataSet(startDate: String, endDate: String, results: List[QueryResult])

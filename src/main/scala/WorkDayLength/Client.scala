@@ -1,17 +1,18 @@
 package WorkDayLength
 
-import org.http4s.Uri.{RegName, Authority}
+import java.time.Duration
+
+import org.http4s.Uri.{Authority, RegName}
 import org.http4s.dsl.Path
 import org.http4s.util.CaseInsensitiveString
 import org.slf4j.LoggerFactory
 import com.typesafe.scalalogging.Logger
-
 import org.http4s._
 import org.http4s.headers.Accept
 import org.http4s.client.blaze.PooledHttp1Client
-
 import JsonProtocol._
 import spray.json._
+import java.time.Duration.ofMinutes
 
 object Client extends App {
 
@@ -40,6 +41,7 @@ object Client extends App {
   val startDate = "2016-04-13"
   val endDate = "2016-04-14"
   val apiUri = buildApiUri(key, startDate, endDate)
+  val maxTimeOut = ofMinutes(5)
 
   logger.info(s"Getting data for $startDate - $endDate")
 
@@ -49,8 +51,37 @@ object Client extends App {
 
   val objectResults = result.parseJson.convertTo[ApiResult]
 
-  objectResults.entries.foreach(e => logger.info(e.toString))
+  def group(entries: List[TimeEntry], timeEntry: TimeEntry) = {
+    val last = entries.last
+    if (last.endsAt.plus(maxTimeOut).compareTo(timeEntry.startsAt) >= 0)  {
+      entries.take(entries.size - 1) :::
+        List(
+          new TimeEntry(
+            last.date,
+            (Duration.between(last.startsAt, timeEntry.endsAt).toMillis / 1000).toInt,
+            timeEntry.nPeople,
+            last.activity ++ ", " ++ timeEntry.activity,
+            "", // TODO: Fix me
+            0   // TODO: Fix me
+          )
+        )
+    } else {
+      entries ::: List(timeEntry)
+    }
+  }
 
+  //objectResults.entries.foreach(e => logger.info(e.toString))
+
+  val startingTimeEntry = new TimeEntry("2016-04-13T00:00:00", 0, 1, "", "", 0)
+  val grouppedEntries = objectResults.entries.
+    foldLeft(List(startingTimeEntry))(group).
+    drop(1)
+
+  grouppedEntries.foreach(e => logger.info(e.toString))
+
+   /**
+   * testArray.foldLeft(List(("", -1000)))(group).drop(1)
+   */
 
   logger.info("Done")
 }
