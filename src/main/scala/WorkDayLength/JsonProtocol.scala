@@ -2,11 +2,8 @@ package WorkDayLength
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 import spray.json.DefaultJsonProtocol
-
-import scala.concurrent.duration.Duration
 
 import scala.language.implicitConversions
 

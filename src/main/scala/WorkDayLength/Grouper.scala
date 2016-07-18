@@ -7,7 +7,7 @@ import java.time.Duration.ofMinutes
 /**
   * Created by dyahofarov on 18/07/2016.
   */
-class Grouper(conf: Config) {
+class Grouper(startAt: String, conf: Config) {
 
   def groupedEntries(objectResults: QueryResult) = {
     objectResults.entries.
@@ -15,8 +15,9 @@ class Grouper(conf: Config) {
     drop(1)
   }
 
-  private val startingTimeEntry = new TimeEntry("2016-04-13T00:00:00", 0, 1, "", "", 0)
-  private val maxTimeOut = ofMinutes(conf.getInt("app.max_timeout"))
+  private lazy val startAtTime = "2016-04-13T00:00:00"
+  private lazy val startingTimeEntry = new TimeEntry(startAtTime, 0, 1, "", "", 0)
+  private val maxTimeOut = ofMinutes(conf.getInt("max_timeout"))
 
   private def group(entries: List[TimeEntry], timeEntry: TimeEntry) = {
     val last = entries.last
