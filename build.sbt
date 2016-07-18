@@ -4,6 +4,8 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
+scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature")
+
 lazy val http4sVersion = "0.13.2"
 
 libraryDependencies ++= Seq(
@@ -14,7 +16,9 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
 
-  "io.spray" %% "spray-json" % "1.3.2"
+  "io.spray" %% "spray-json" % "1.3.2",
+
+  "com.typesafe" % "config" % "1.3.0"
 )
 
 

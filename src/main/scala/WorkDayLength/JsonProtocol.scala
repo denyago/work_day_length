@@ -8,6 +8,8 @@ import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.duration.Duration
 
+import scala.language.implicitConversions
+
 /**
   * JSON output is of the form:
   *
