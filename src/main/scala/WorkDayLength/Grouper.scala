@@ -12,7 +12,7 @@ class Grouper(startAt: String, conf: Config) {
   def groupedEntries(objectResults: QueryResult) = {
     objectResults.entries.
     foldLeft(List(startingTimeEntry))(group).
-    drop(1)
+    drop(1) // TODO: Bug when single entry groupped into startingTimeEntry
   }
 
   private lazy val startAtTime = "2016-04-13T00:00:00"
