@@ -29,7 +29,12 @@ class ApiClient(config: Config, logger: Logger) {
   private def buildApiUri(key: String, startDate: String, endDate: String): Uri = {
     Uri(
       scheme    = Some(CaseInsensitiveString(config.getString("protocol"))),
-      authority = Some(Authority(host = RegName(config.getString("hostname")))),
+      authority = Some(
+        Authority(
+          host = RegName(config.getString("hostname")),
+          port = Option(config.getInt("port"))
+        )
+      ),
       path      = s"/anapi/data?key=$key&format=json&restrict_begin=$startDate&restrict_end=$endDate&perspective=interval&resolution_time=minute"
     )
   }
