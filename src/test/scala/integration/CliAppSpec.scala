@@ -4,12 +4,14 @@ import unit.UnitSpec
 import WorkDayLength.CliApp
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
-import com.typesafe.scalalogging._
+import com.typesafe.scalalogging.{Logger, _}
 import org.mockserver.client.server.MockServerClient
 import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
 import org.mockserver.integration.ClientAndServer.startClientAndServer
 import org.scalatest.mockito.MockitoSugar
+import org.slf4j.LoggerFactory
+
 import scala.io.Source
 
 class CliAppSpec extends UnitSpec with MockitoSugar {
@@ -23,6 +25,7 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
 
     it("returns data from RescueTime via logger") {
       when(underlying.isInfoEnabled).thenReturn(true)
+      //CliApp.logger = Logger(LoggerFactory.getLogger("CliApp"))
       CliApp.logger = Logger(underlying)
       CliApp.config = ConfigFactory.load("testApplication")
 
@@ -42,7 +45,7 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
 
       CliApp.main(new Array(0))
 
-      verify(underlying).info("2016-04-13T07:00:00 (PT1M29S): Google Chrome for Android")
+      verify(underlying).info("2016-04-13: Worked from 09:45 till 17:22 for 6 hours 40 minutes")
     }
   }
 }

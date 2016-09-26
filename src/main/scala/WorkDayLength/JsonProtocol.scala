@@ -2,6 +2,7 @@ package WorkDayLength
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.Duration
 
 import spray.json.DefaultJsonProtocol
 
@@ -55,14 +56,23 @@ case class ApiResult(notes: String, row_headers: List[String], rows: List[List[E
   * @param productivity level of productivity
   */
 case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String, category: String, productivity: Int) {
+  def +(that: TimeEntry) = new TimeEntry(
+            this.date,
+            (Duration.between(this.startsAt, that.endsAt).toMillis / 1000).toInt,
+            that.nPeople,
+            this.activity ++ ", " ++ that.activity,
+            "", // TODO: Fix me
+            0   // TODO: Fix me
+          )
+
   import java.time.Duration.ofSeconds
 
   def startsAt = LocalDateTime.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
   def endsAt =  startsAt plus duration
+  def duration = ofSeconds(nSeconds)
 
   override def toString: String =  s"$date ($duration): $activity"
 
-  private def duration = ofSeconds(nSeconds)
 }
 case class QueryResult(notes: String, rowHeaders: List[String], entries: List[TimeEntry])
 case class DataSet(startDate: String, endDate: String, results: List[QueryResult])
