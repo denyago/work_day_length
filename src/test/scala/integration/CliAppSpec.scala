@@ -10,7 +10,6 @@ import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
 import org.mockserver.integration.ClientAndServer.startClientAndServer
 import org.scalatest.mockito.MockitoSugar
-import org.slf4j.LoggerFactory
 
 import scala.io.Source
 
@@ -22,14 +21,14 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
 
   describe("CliApp") {
     val underlying = mock[org.slf4j.Logger]
+    val cli_app = new CliApp(
+      Logger(underlying),
+      ConfigFactory.load("testApplication"),
+      None
+    )
 
     it("returns data from RescueTime via logger") {
       when(underlying.isInfoEnabled).thenReturn(true)
-      val cli_app = new CliApp {
-        override def logger = Logger(underlying)
-      }
-      cli_app.config = ConfigFactory.load("testApplication")
-
       startClientAndServer(1080)
 
       (new MockServerClient("localhost", 1080))
@@ -44,7 +43,7 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
             .withBody(getFileContents("/single_result_api.json"))
         )
 
-      cli_app.run(new Array(0))
+      cli_app.run
 
       verify(underlying).info("2016-04-13: Worked from 09:45 till 17:22 for 6 hours 40 minutes")
     }
