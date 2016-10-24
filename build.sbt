@@ -23,6 +23,7 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.0.0",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
   "org.mockito" % "mockito-core" % "2.1.0-RC.1" % "test",
+  "com.google.guava" % "guava" % "19.0" % "test",
   "org.mock-server" % "mockserver-netty" % "3.10.4" % "test"
 )
 
