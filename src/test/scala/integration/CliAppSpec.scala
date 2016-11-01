@@ -1,8 +1,7 @@
 package integration
 
+import WorkDayLength.Cli.CliApp
 import unit.UnitSpec
-import WorkDayLength.CliApp
-import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import com.typesafe.scalalogging.{Logger, _}
 import org.mockserver.client.server.MockServerClient
@@ -21,13 +20,11 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
 
   describe("CliApp") {
     val underlying = mock[org.slf4j.Logger]
-    val cli_app = new CliApp(
-      Logger(underlying),
-      ConfigFactory.load("testApplication"),
-      None
-    )
 
     it("returns data from RescueTime via logger") {
+      val opts = List("--minimal-time", "10").toArray
+      val cli_app = new CliApp(Logger(underlying), opts)
+
       when(underlying.isInfoEnabled).thenReturn(true)
       startClientAndServer(1080)
 
@@ -46,6 +43,16 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
       cli_app.run
 
       verify(underlying).info("2016-04-13: Worked from 09:45 till 17:22 for 6 hours 40 minutes")
+    }
+
+    it("returns error message if options are wrong") {
+      val cli_app = new CliApp(Logger(underlying), List("--i-am-lobster").toArray)
+
+      when(underlying.isErrorEnabled).thenReturn(true)
+
+      cli_app.run
+
+      verify(underlying).error("Error: Unknown option --i-am-lobster\nTry --help for more information.\n")
     }
   }
 }

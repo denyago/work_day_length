@@ -1,24 +1,29 @@
-package WorkDayLength
+package WorkDayLength.Cli
 
-import java.time.ZoneOffset
-import java.time.Duration
+import java.time.{Duration, ZoneOffset}
 
-import com.typesafe.config.{Config, ConfigFactory}
-import org.slf4j.LoggerFactory
+import WorkDayLength.{ApiClient, Grouper}
 import com.typesafe.scalalogging.Logger
+import org.slf4j.LoggerFactory
 
-case class CliApp(logger: Logger, config: Config, args: Option[Array[String]]) {
+case class CliApp(logger: Logger, args: Array[String]) {
   def run: Unit = {
-    val httpClient = new ApiClient(config.getConfig("app.http"), Logger(LoggerFactory.getLogger("HttpClient")))
-    val grouper = new Grouper(config.getString("app.startDate"), config.getConfig("app.grouping"))
+    val opts = new OptsMerger(args).parse
+    if (opts.failed) {
+      logger.error(opts.errorMessage)
+      return
+    }
+
+    val httpClient = new ApiClient(opts.settings.httpClient, Logger(LoggerFactory.getLogger("HttpClient")))
+    val grouper = new Grouper(opts.settings.app.startDate, opts.settings.app.minimalTime)
 
     // 2016-04-13: Worked from 09:45:00 till 17:00:00 for 6H18M
 
     val workEntries = grouper.
       groupedEntries(
         httpClient.fetchResults(
-          config.getString("app.startDate"),
-          config.getString("app.endDate")
+          opts.settings.app.startDate,
+          opts.settings.app.endDate
         )
       )
       .sortBy(e => e.duration.toMillis)
@@ -40,10 +45,6 @@ case class CliApp(logger: Logger, config: Config, args: Option[Array[String]]) {
 }
 
 object CliApp extends App {
-  new CliApp(
-    Logger(LoggerFactory.getLogger("CliApp")),
-    ConfigFactory.load(),
-    Option(args)
-  ).run
+  new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
 }
 

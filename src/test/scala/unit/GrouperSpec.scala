@@ -1,12 +1,12 @@
 package unit
 
-import WorkDayLength.{Grouper, QueryResult, TimeEntry}
+import WorkDayLength.{Grouper, QueryResult, Settings, TimeEntry}
 import com.typesafe.config.ConfigFactory
 
 class GrouperSpec extends UnitSpec {
   describe("#groupedEntries") {
-    lazy val config = ConfigFactory.load()
-    lazy val grouper = new Grouper(config.getString("app.startDate"), config.getConfig("app.grouping"))
+    lazy val settings = new Settings(ConfigFactory.load())
+    lazy val grouper = new Grouper(settings.app.startDate, settings.app.minimalTime)
 
     def buildInput(list: List[TimeEntry]): QueryResult = {
       new QueryResult("", List(), list)
