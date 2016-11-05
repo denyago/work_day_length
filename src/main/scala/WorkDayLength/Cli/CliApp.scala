@@ -8,19 +8,14 @@ import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
 case class CliApp(logger: Logger, args: Array[String]) {
-  def run: Unit = {
+  def run: Int = {
     (new OptsToSettings(args).settings) match {
-      case Left(s) => getData(s)
-      case Right(er) => exit(er.message, er.exitCode)
-    }
-  }
-
-  private def exit(message: String, code: Int): Unit = {
-    if (code > 0) {
-      logger.error(message)
-      System.exit(code)
-    } else {
-      logger.info(message)
+      case Left(s) =>
+        getData(s)
+        0 // Exit code for success
+      case Right(er) =>
+        logger.error(er.message)
+        er.exitCode
     }
   }
 
@@ -54,11 +49,12 @@ case class CliApp(logger: Logger, args: Array[String]) {
         overallDuration.toHours + " hours " + (overallDuration.toMinutes - overallDuration.toHours * 60) + " minutes"
     }
 
-    exit(message, 0)
+    logger.info(message)
   }
 }
 
 object CliApp extends App {
-  new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
+  val exitCode = new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
+  if (exitCode > 0) { System.exit(exitCode) }
 }
 

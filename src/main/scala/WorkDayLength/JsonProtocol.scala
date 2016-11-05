@@ -1,8 +1,7 @@
 package WorkDayLength
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, Duration}
 import java.time.format.DateTimeFormatter
-import java.time.Duration
 
 import spray.json.DefaultJsonProtocol
 
@@ -41,10 +40,10 @@ import scala.language.implicitConversions
   * TODO - There's probably a cleaner way to represent this...
   *
   * @param notes useless field
-  * @param row_headers headers for each segment for each `row` entry
+  * @param rowHeaders headers for each segment for each `row` entry
   * @param rows time entries
   */
-case class ApiResult(notes: String, row_headers: List[String], rows: List[List[Either[Int, String]]])
+case class ApiResult(notes: String, rowHeaders: List[String], rows: List[List[Either[Int, String]]])
 
 /**
   * Creating a first class type for each entry so its more clear to the user
@@ -65,11 +64,9 @@ case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String
             0   // TODO: Fix me
           )
 
-  import java.time.Duration.ofSeconds
-
   def startsAt = LocalDateTime.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
   def endsAt =  startsAt plus duration
-  def duration = ofSeconds(nSeconds)
+  def duration = Duration.ofSeconds(nSeconds)
 
   override def toString: String =  s"$date ($duration): $activity"
 
@@ -105,7 +102,7 @@ object JsonProtocol extends DefaultJsonProtocol {
 
   implicit def toQueryResult(apiResult: ApiResult):QueryResult = {
     val entries = apiResult.rows.map(toTimeEntry)
-    QueryResult(apiResult.notes, apiResult.row_headers, entries)
+    QueryResult(apiResult.notes, apiResult.rowHeaders, entries)
   }
 
   implicit def toApiResult(result: QueryResult): ApiResult = {

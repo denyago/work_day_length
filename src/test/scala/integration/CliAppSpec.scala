@@ -23,7 +23,7 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
 
     it("returns data from RescueTime via logger") {
       val opts = List("--minimal-time", "10").toArray
-      val cli_app = new CliApp(Logger(underlying), opts)
+      val cliApp = new CliApp(Logger(underlying), opts)
 
       when(underlying.isInfoEnabled).thenReturn(true)
       startClientAndServer(1080)
@@ -40,7 +40,7 @@ class CliAppSpec extends UnitSpec with MockitoSugar {
             .withBody(getFileContents("/single_result_api.json"))
         )
 
-      cli_app.run
+      cliApp.run
 
       verify(underlying).info("2016-04-13: Worked from 09:45 till 17:22 for 6 hours 40 minutes")
     }
