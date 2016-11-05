@@ -6,7 +6,7 @@ scalaVersion := "2.11.8"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature")
 
-lazy val http4sVersion = "0.13.2"
+lazy val http4sVersion = "0.14.11a"
 
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging"   % "3.4.0",
