@@ -10,9 +10,11 @@ Calculates office hours based on RescueTime statistics
 ### MVP 
 1. [X] Tests
 2. [X] CLI app returns human-readable data
-3. [ ] Fix `--help` command
-4. [ ] Actually exit when finish (no need to `Ctrl+C`)
-5. [ ] Organize `Settings` package
+3. [X] Fix `--help` command
+4. [X] Actually exit when finish (no need to `Ctrl+C`)
+5. [ ] Sanity checks on real data and fix if needed
+6. [ ] Organize `Settings` package
 
 ### Nice-to-have
 1. [ ] CI & Code analytics tools (`scalactic` for example)
+2. [ ] CLI running script and `dist` build task

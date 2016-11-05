@@ -14,7 +14,7 @@ class OptsMerger(opts: Array[String]) {
     head ("Work day length", "0.1")
     help("help")
 
-    val dateFormatHint = "should be in YYYY-MM-DD format."
+    private val dateFormatHint = "should be in YYYY-MM-DD format."
 
     opt[String]('s', "start-date").foreach( x => setVal("app.startDate", x) ).
       validate(dateValidator).
@@ -35,6 +35,8 @@ class OptsMerger(opts: Array[String]) {
         case None => failure(s"Date $dateFormatHint")
       }
     }
+
+    override def terminate(exitState: Either[String, Unit]): Unit = ()
   }
 
   private val defaultConfig = ConfigFactory.load()
@@ -56,10 +58,11 @@ class OptsMerger(opts: Array[String]) {
     val bos = new ByteArrayOutputStream()
     Console.withErr(bos) {
       Console.withOut(bos) {
-        this.failed = !parser.parse(opts)
+        parser.parse(opts)
       }
     }
     this.errorMessage = bos.toString("UTF-8")
+    this.failed = !errorMessage.isEmpty
 
     this
   }

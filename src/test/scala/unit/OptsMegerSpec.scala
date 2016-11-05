@@ -5,6 +5,7 @@ import WorkDayLength.Cli.OptsMerger
 class OptsMegerSpec extends UnitSpec {
   lazy val badOpts = List("--start-date", "--end-date").toArray
   lazy val emptyOptions = new Array[String](0)
+  lazy val helpOpts = List("--help").toArray
 
   describe("#settings") {
     it("returns settings based on default config if no options given") {
@@ -31,6 +32,11 @@ class OptsMegerSpec extends UnitSpec {
       new OptsMerger(badOpts).
         parse.failed shouldEqual true
     }
+
+    it("returns true if --help was passed") {
+      new OptsMerger(helpOpts).
+        parse.failed shouldEqual true
+    }
   }
 
   describe("#errorMessage") {
@@ -39,9 +45,22 @@ class OptsMegerSpec extends UnitSpec {
         parse.errorMessage shouldEqual ""
     }
 
-    it("returns error message of options not parsed") {
+    it("returns error message if options not parsed") {
       new OptsMerger(badOpts).
         parse.errorMessage shouldEqual "Error: Date should be in YYYY-MM-DD format.\nTry --help for more information.\n"
+    }
+
+    it("returns help message if --help key passed") {
+      new OptsMerger(helpOpts).
+        parse.errorMessage.
+        replaceAll("""(?m)\s+$""", "") shouldEqual """Work day length 0.1
+Usage: work_day_length [options]
+  --help
+  -s, --start-date <value>
+                           start date of report. It should be in YYYY-MM-DD format.
+  -e, --end-date <value>   end date of report. It should be in YYYY-MM-DD format.
+  -m, --minimal-time <value>
+                           time may be skipped between activities"""
     }
   }
 }

@@ -21,7 +21,9 @@ class ApiClient(config: HttpSettings, logger: Logger) {
     val httpClient  = PooledHttp1Client()
     val apiCallTask = httpClient.fetchAs[String](request)
 
-    apiCallTask.unsafePerformSync
+    val result = apiCallTask.unsafePerformSync
+    httpClient.shutdownNow()
+    return result
   }
 
   private def buildApiUri(key: String, startDate: String, endDate: String): Uri = {

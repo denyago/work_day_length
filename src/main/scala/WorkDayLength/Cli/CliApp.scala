@@ -7,11 +7,11 @@ import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
 case class CliApp(logger: Logger, args: Array[String]) {
-  def run: Unit = {
+  def run: Int = {
     val opts = new OptsMerger(args).parse
     if (opts.failed) {
       logger.error(opts.errorMessage)
-      return
+      return 1
     }
 
     val httpClient = new ApiClient(opts.settings.httpClient, Logger(LoggerFactory.getLogger("HttpClient")))
@@ -41,10 +41,13 @@ case class CliApp(logger: Logger, args: Array[String]) {
         start.startsAt.toLocalTime + " till " + end.endsAt.toLocalTime + " for " +
         overallDuration.toHours + " hours " + (overallDuration.toMinutes - overallDuration.toHours * 60) + " minutes"
     )
+
+    return 0
   }
 }
 
 object CliApp extends App {
-  new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
+  val exitCode = new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
+  System.exit(exitCode)
 }
 
