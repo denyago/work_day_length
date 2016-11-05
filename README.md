@@ -12,8 +12,8 @@ Calculates office hours based on RescueTime statistics
 2. [X] CLI app returns human-readable data
 3. [X] Fix `--help` command
 4. [X] Actually exit when finish (no need to `Ctrl+C`)
-5. [ ] Sanity checks on real data and fix if needed
-6. [ ] Organize `Settings` package
+5. [X] Organize `Settings` package
+6. [ ] Sanity checks on real data and fix if needed
 
 ### Nice-to-have
 1. [ ] CI & Code analytics tools (`scalactic` for example)

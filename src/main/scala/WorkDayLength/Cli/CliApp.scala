@@ -2,28 +2,40 @@ package WorkDayLength.Cli
 
 import java.time.{Duration, ZoneOffset}
 
-import WorkDayLength.{ApiClient, Grouper}
+import WorkDayLength.Cli.Arguments.OptsToSettings
+import WorkDayLength.{ApiClient, Grouper, Settings}
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 
 case class CliApp(logger: Logger, args: Array[String]) {
-  def run: Int = {
-    val opts = new OptsMerger(args).parse
-    if (opts.failed) {
-      logger.error(opts.errorMessage)
-      return 1
+  def run: Unit = {
+    (new OptsToSettings(args).settings) match {
+      case Left(s) => getData(s)
+      case Right(er) => exit(er.message, er.exitCode)
     }
+  }
 
-    val httpClient = new ApiClient(opts.settings.httpClient, Logger(LoggerFactory.getLogger("HttpClient")))
-    val grouper = new Grouper(opts.settings.app.startDate, opts.settings.app.minimalTime)
+  private def exit(message: String, code: Int): Unit = {
+    if (code > 0) {
+      logger.error(message)
+      System.exit(code)
+    } else {
+      logger.info(message)
+    }
+  }
+
+  private def getData(settings: Settings): Unit = {
+
+    val httpClient = new ApiClient(settings.httpClient, Logger(LoggerFactory.getLogger("HttpClient")))
+    val grouper = new Grouper(settings.app.startDate, settings.app.minimalTime)
 
     // 2016-04-13: Worked from 09:45:00 till 17:00:00 for 6H18M
 
     val workEntries = grouper.
       groupedEntries(
         httpClient.fetchResults(
-          opts.settings.app.startDate,
-          opts.settings.app.endDate
+          settings.app.startDate,
+          settings.app.endDate
         )
       )
       .sortBy(e => e.duration.toMillis)
@@ -36,18 +48,17 @@ case class CliApp(logger: Logger, args: Array[String]) {
     val end = workEntries.last
     val overallDuration = workEntries.foldLeft(Duration.ZERO)((b, a) => b plus a.duration)
 
-    logger.info(
+    val message = {
       start.startsAt.toLocalDate + ": Worked from " +
         start.startsAt.toLocalTime + " till " + end.endsAt.toLocalTime + " for " +
         overallDuration.toHours + " hours " + (overallDuration.toMinutes - overallDuration.toHours * 60) + " minutes"
-    )
+    }
 
-    return 0
+    exit(message, 0)
   }
 }
 
 object CliApp extends App {
-  val exitCode = new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
-  System.exit(exitCode)
+  new CliApp(Logger(LoggerFactory.getLogger("CliApp")), args).run
 }
 
