@@ -40,10 +40,10 @@ import scala.language.implicitConversions
   * TODO - There's probably a cleaner way to represent this...
   *
   * @param notes useless field
-  * @param rowHeaders headers for each segment for each `row` entry
+  * @param row_headers headers for each segment for each `row` entry
   * @param rows time entries
   */
-case class ApiResult(notes: String, rowHeaders: List[String], rows: List[List[Either[Int, String]]])
+case class ApiResult(notes: String, row_headers: List[String], rows: List[List[Either[Int, String]]])
 
 /**
   * Creating a first class type for each entry so its more clear to the user
@@ -102,7 +102,7 @@ object JsonProtocol extends DefaultJsonProtocol {
 
   implicit def toQueryResult(apiResult: ApiResult):QueryResult = {
     val entries = apiResult.rows.map(toTimeEntry)
-    QueryResult(apiResult.notes, apiResult.rowHeaders, entries)
+    QueryResult(apiResult.notes, apiResult.row_headers, entries)
   }
 
   implicit def toApiResult(result: QueryResult): ApiResult = {
