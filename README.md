@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/denyago/work_day_length.svg?branch=master)](https://travis-ci.org/denyago/work_day_length)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c6b641bcd8194d88a7f124d0c5e52d10)](https://www.codacy.com/app/denyago/work_day_length?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=denyago/work_day_length&amp;utm_campaign=Badge_Grade)
+
 # Work Day Length
 Calculates office hours based on RescueTime statistics
 
@@ -16,5 +19,5 @@ Calculates office hours based on RescueTime statistics
 6. [ ] Sanity checks on real data and fix if needed
 
 ### Nice-to-have
-1. [ ] CI & Code analytics tools (`scalactic` for example)
+1. [X] CI & Code analytics tools (`scalactic` for example)
 2. [ ] CLI running script and `dist` build task
