@@ -61,7 +61,7 @@ case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String
             (
               Duration.between(
                 this.startsAt,
-                latestEndAt(this, that)
+                TimeEntryHelper.endsLatest(List(this, that)).endsAt
               ).toMillis / 1000
             ).toInt,
             that.nPeople,
@@ -75,12 +75,32 @@ case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String
   def duration = Duration.ofSeconds(nSeconds)
 
   override def toString: String =  s"$date ($duration): $activity"
-
-  private def latestEndAt(one: TimeEntry, another: TimeEntry): LocalDateTime =
-    List(one.endsAt, another.endsAt).
-      maxBy(x => x.toEpochSecond(ZoneOffset.UTC))
-
 }
+
+object TimeEntryHelper {
+  def startsEarliest(entries: List[TimeEntry]): TimeEntry =
+    entries.
+      minBy(_.startsAt.toEpochSecond(ZoneOffset.UTC))
+
+  def endsLatest(entries: List[TimeEntry]): TimeEntry =
+    entries.
+      maxBy(_.endsAt.toEpochSecond(ZoneOffset.UTC))
+
+  def addDurations(entries: List[TimeEntry]): Duration =
+    entries.
+      foldLeft(Duration.ZERO)((b, a) => b plus a.duration)
+
+  case class DurationParts(val duration: Duration) {
+    lazy val hours = duration.toHours
+    lazy val minutes = (duration.toMinutes - hours * 60)
+
+    override def toString: String = (hoursString + minutesString).trim
+
+    private def minutesString: String = if (minutes > 0) { s" $minutes minutes" } else { "" }
+    private def hoursString: String = if (hours > 0) { s"$hours hours" } else { "" }
+  }
+}
+
 case class QueryResult(notes: String, rowHeaders: List[String], entries: List[TimeEntry])
 case class DataSet(startDate: String, endDate: String, results: List[QueryResult])
 

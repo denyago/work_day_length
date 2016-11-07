@@ -12,6 +12,6 @@ class DayLengthSpec extends UnitSpec{
       TimeEntry("2016-04-13T01:00:00", 120, 1, "first activity", "", 0)
     )
 
-    DayLength.result(entries) shouldBe "2016-04-13: Worked from 01:00 till 03:02 for 0 hours 4 minutes"
+    DayLength.result(entries) shouldBe "2016-04-13: Worked from 01:00 till 03:02 for 4 minutes"
   }
 }
