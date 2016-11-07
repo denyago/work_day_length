@@ -1,6 +1,6 @@
 package WorkDayLength
 
-import java.time.{LocalDateTime, Duration}
+import java.time.{Duration, LocalDateTime, ZoneOffset}
 import java.time.format.DateTimeFormatter
 
 import spray.json.DefaultJsonProtocol
@@ -55,9 +55,15 @@ case class ApiResult(notes: String, row_headers: List[String], rows: List[List[E
   * @param productivity level of productivity
   */
 case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String, category: String, productivity: Int) {
+
   def +(that: TimeEntry) = new TimeEntry(
             this.date,
-            (Duration.between(this.startsAt, that.endsAt).toMillis / 1000).toInt,
+            (
+              Duration.between(
+                this.startsAt,
+                latestEndAt(this, that)
+              ).toMillis / 1000
+            ).toInt,
             that.nPeople,
             this.activity ++ ", " ++ that.activity,
             "", // TODO: Fix me
@@ -69,6 +75,10 @@ case class TimeEntry(date: String, nSeconds: Int, nPeople: Int, activity: String
   def duration = Duration.ofSeconds(nSeconds)
 
   override def toString: String =  s"$date ($duration): $activity"
+
+  private def latestEndAt(one: TimeEntry, another: TimeEntry): LocalDateTime =
+    List(one.endsAt, another.endsAt).
+      maxBy(x => x.toEpochSecond(ZoneOffset.UTC))
 
 }
 case class QueryResult(notes: String, rowHeaders: List[String], entries: List[TimeEntry])

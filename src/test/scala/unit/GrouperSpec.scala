@@ -42,5 +42,26 @@ class GrouperSpec extends UnitSpec {
       val groupedEntity = new TimeEntry("2016-04-13T01:00:00", 6, 1, "first activity, second activity", "", 0)
       grouper.groupedEntries(input) shouldBe List(groupedEntity)
     }
+
+    it("returns List with single entity when input has fully intersecting entries") {
+      val firstEntity = new TimeEntry("2016-04-13T01:00:00", 60, 1, "first activity (PC)", "", 0)
+      val secondEntity = new TimeEntry("2016-04-13T01:00:05", 50, 1, "second activity (Mobile)", "", 0)
+      val input = buildInput(List(firstEntity, secondEntity))
+
+      val groupedEntity = new TimeEntry("2016-04-13T01:00:00", 60, 1, "first activity (PC), second activity (Mobile)", "", 0)
+      grouper.groupedEntries(input) shouldBe List(groupedEntity)
+    }
+
+    it("returns List with single entity when input has partly intersecting entries") {
+      val firstEntity = new TimeEntry("2016-04-13T01:00:00", 60, 1, "first activity (PC)", "", 0)
+      val secondEntity = new TimeEntry("2016-04-13T01:00:45", 60, 1, "second activity (Mobile)", "", 0)
+      val input = buildInput(List(firstEntity, secondEntity))
+
+      // 00:00 + 60 = 01:00
+      // 00:45 + 60 = 01:45
+      // Together:    01:45 = 105 sec
+      val groupedEntity = new TimeEntry("2016-04-13T01:00:00", 105, 1, "first activity (PC), second activity (Mobile)", "", 0)
+      grouper.groupedEntries(input) shouldBe List(groupedEntity)
+    }
   }
 }
