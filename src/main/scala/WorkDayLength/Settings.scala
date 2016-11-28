@@ -1,5 +1,8 @@
 package WorkDayLength
 
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
 import com.typesafe.config.Config
 
 class Settings(config: Config) {
@@ -14,6 +17,8 @@ class AppSettings(config: Config) {
   val startDate = config.getString("startDate")
   val endDate = config.getString("endDate")
   val minimalTime = config.getInt("grouping.max_timeout")
+  val dayStartsAt = LocalTime.parse(config.getString("dayStartsAt"), DateTimeFormatter.ISO_LOCAL_TIME)
+  val dayEndsAt = LocalTime.parse(config.getString("dayEndsAt"), DateTimeFormatter.ISO_LOCAL_TIME)
 
   override def toString: String = s"startDate: $startDate, endDate: $endDate, minimalTime: $minimalTime"
 }

@@ -33,7 +33,11 @@ case class CliApp(logger: Logger, args: Array[String]) {
       )
 
     logger.info(
-      Reports.DayLength.result(workEntries)
+      Reports.DayLength.result(
+        workEntries,
+        settings.app.dayStartsAt,
+        settings.app.dayEndsAt
+      )
     )
   }
 }

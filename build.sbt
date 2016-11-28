@@ -1,10 +1,12 @@
 name := "WorkDayLength"
 
-version := "1.0"
+version := "0.2"
 
 scalaVersion := "2.11.8"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature")
+
+mainClass in assembly := Some("WorkDayLength.Cli.CliApp")
 
 lazy val http4sVersion = "0.14.11a"
 
