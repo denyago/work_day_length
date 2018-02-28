@@ -16,7 +16,18 @@ Calculates office hours based on RescueTime statistics
 3. [X] Fix `--help` command
 4. [X] Actually exit when finish (no need to `Ctrl+C`)
 5. [X] Organize `Settings` package
-6. [ ] Sanity checks on real data and fix if needed
+6. [ ] Filter out too short activities
+6. [ ] Specify "around time" for workday start and finish
+7. [ ] Pass the API KEY via env variable/net.rc config/etc.
+8. [ ] Sanity checks on real data and fix if needed
+
+```
+sbt "runMain WorkDayLength.Cli.CliApp --start-date 2016-11-01 --end-date 2016-11-02"
+2016-11-01: Worked from 13:15 till 20:25:57 for 12 hours 18 minutes
+
+sbt "runMain WorkDayLength.Cli.CliApp --start-date 2016-11-05 --end-date 2016-11-06"
+2016-11-05: Worked from 18:15 till 14:41:54 for 6 hours 7 minutes
+```
 
 ### Nice-to-have
 1. [X] CI & Code analytics tools (`scalactic` for example)
